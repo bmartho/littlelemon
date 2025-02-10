@@ -3,9 +3,9 @@ import Foundation
 
 struct PersistenceController {
     static let shared = PersistenceController()
-
+    
     let container: NSPersistentContainer
-
+    
     init() {
         container = NSPersistentContainer(name: "ExampleDatabase")
         container.persistentStoreDescriptions.first!.url = URL(fileURLWithPath: "/dev/null")
@@ -13,10 +13,16 @@ struct PersistenceController {
         container.viewContext.automaticallyMergesChangesFromParent = true
     }
     
-    func clear() {
-        // Delete all dishes from the store
+    func doesDishExist(title: String, _ context: NSManagedObjectContext) -> Bool {
         let fetchRequest: NSFetchRequest<NSFetchRequestResult> = NSFetchRequest(entityName: "Dish")
-        let deleteRequest = NSBatchDeleteRequest(fetchRequest: fetchRequest)
-        let _ = try? container.persistentStoreCoordinator.execute(deleteRequest, with: container.viewContext)
+        fetchRequest.predicate = NSPredicate(format: "title == %@", title as CVarArg)
+        
+        do {
+            let count = try context.count(for: fetchRequest)
+            return count > 0
+        } catch {
+            print("Failed to fetch dish: \(error)")
+            return false
+        }
     }
 }

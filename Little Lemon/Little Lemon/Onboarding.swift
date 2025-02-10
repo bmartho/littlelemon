@@ -18,47 +18,56 @@ struct Onboarding: View {
     @State private var isLoggedIn = false
     
     var body: some View {
-        NavigationView {
-            VStack {
-                NavigationLink(destination: Home(), isActive: $isLoggedIn) {
-                    EmptyView()
-                }
-                
-                TextField("First Name", text: $firstName)
-                    .textFieldStyle(RoundedBorderTextFieldStyle())
-                
-                TextField("Last Name", text: $lastName)
-                    .textFieldStyle(RoundedBorderTextFieldStyle())
-                
-                TextField("Email", text: $email)
-                    .textFieldStyle(RoundedBorderTextFieldStyle())
-                
-                
-                Button("Register") {
-                    if(!firstName.isEmpty && !lastName.isEmpty && validateEmail(email)){
-                        UserDefaults.standard.set(firstName, forKey: kFirstName)
-                        UserDefaults.standard.set(lastName, forKey: kLastName)
-                        UserDefaults.standard.set(email, forKey: kEmail)
-                        UserDefaults.standard.set(true, forKey: kIsLoggedIn)
-                        isLoggedIn = true
-                    }
-                }.padding()
-                
-                Spacer()
-            }.padding()
-        }.onAppear{
-            let isLogged = UserDefaults.standard.bool(forKey: kIsLoggedIn)
-            if(isLogged) {
-                isLoggedIn = true
+        VStack {
+            NavigationLink(destination: Home(), isActive: $isLoggedIn) {
+                EmptyView()
             }
+            headerSection
+                        
+            TextField("First Name", text: $firstName)
+                .textFieldStyle(RoundedBorderTextFieldStyle())
+            
+            TextField("Last Name", text: $lastName)
+                .textFieldStyle(RoundedBorderTextFieldStyle())
+            
+            TextField("Email", text: $email)
+                .textFieldStyle(RoundedBorderTextFieldStyle())
+            
+            
+            Button("Register") {
+                if(!firstName.isEmpty && !lastName.isEmpty && !email.isEmpty){
+                    UserDefaults.standard.set(firstName, forKey: kFirstName)
+                    UserDefaults.standard.set(lastName, forKey: kLastName)
+                    UserDefaults.standard.set(email, forKey: kEmail)
+                    UserDefaults.standard.set(true, forKey: kIsLoggedIn)
+                    isLoggedIn = true
+                }
+            }.padding()
+            
+            Spacer()
+        }.padding()
+            .onAppear{
+                let isLogged = UserDefaults.standard.bool(forKey: kIsLoggedIn)
+                if(isLogged) {
+                    isLoggedIn = true
+                }
+            }
+    }
+    
+    var headerSection: some View {
+        HStack{
+            Text("LITTLE LEMON")
+                .foregroundColor(.gray)
+                .font(.system(size: 20))
+                .bold()
+            
+            Image("profile-image-placeholder")
+                .resizable()
+                .scaledToFit()
+                .clipShape(Circle())
+                .frame(width: 50, height: 50)
         }
     }
-}
-
-func validateEmail(_ email : String) -> Bool{
-    let emailRegEx = "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,64}"
-    let emailPredicate = NSPredicate(format: "SELF MATCHES %@", emailRegEx)
-    return emailPredicate.evaluate(with: email)
 }
 
 #Preview {
